@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f0f4ff">
+<title>Attendance · 2026–2029</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════
+   APP DESIGN TOKENS
+═══════════════════════════════ */
+:root {
+  --bg:        #f0f4ff;
+  --bg2:       #e8eef9;
+  --card:      #ffffff;
+  --card2:     #f7f9ff;
+  --border:    #dde4f0;
+  --border2:   #c8d4e8;
+  --text:      #111827;
+  --text2:     #4b5c74;
+  --text3:     #8fa0b8;
+  --blue:      #2563eb;
+  --blue-mid:  #3b82f6;
+  --blue-pale: #eff4ff;
+  --blue-b:    #bfdbfe;
+  --present:   #16a34a;
+  --present-bg:#dcfce7;
+  --present-b: #86efac;
+  --absent:    #dc2626;
+  --absent-bg: #fee2e2;
+  --absent-b:  #fca5a5;
+  --holiday:   #d97706;
+  --holiday-bg:#fef3c7;
+  --holiday-b: #fcd34d;
+  --notwork:   #6b7a90;
+  --notwork-bg:#f0f4ff;
+  --notwork-b: #dde4f0;
+  --sh:  0 1px 4px rgba(37,99,235,.08), 0 2px 12px rgba(37,99,235,.05);
+  --sh2: 0 4px 20px rgba(37,99,235,.12);
+  --radius: 18px;
+  --radius-sm: 10px;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --ui:   'DM Sans', sans-serif;
+}
+
+body.dark {
+  --bg:        #0c1220;
+  --bg2:       #111827;
+  --card:      #1a2334;
+  --card2:     #202c3e;
+  --border:    #263347;
+  --border2:   #2f4060;
+  --text:      #f0f4ff;
+  --text2:     #8fa5c5;
+  --text3:     #4a6080;
+  --blue-pale: #162040;
+  --blue-b:    #1e3a6e;
+  --present-bg:#0d2a17;
+  --present-b: #166534;
+  --absent-bg: #2a0d0d;
+  --absent-b:  #7f1d1d;
+  --holiday-bg:#2a1d06;
+  --holiday-b: #92400e;
+  --notwork-bg:#131e2e;
+  --notwork-b: #263347;
+  --sh:  0 1px 8px rgba(0,0,0,.4);
+  --sh2: 0 4px 24px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:var(--ui);
+  background:var(--bg);
+  color:var(--text);
+  padding:12px 10px 32px;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  transition:background .25s,color .25s;
+}
+.app{width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px;}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  overflow:hidden;
+  box-shadow:var(--sh);
+  transition:background .25s,border-color .25s;
+}
+.p{padding:14px 16px;}
+
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.hdr-title{font-size:.92rem;font-weight:700;letter-spacing:-.02em;}
+.hdr-sub{font-size:.62rem;color:var(--text3);margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:6px;}
+.icon-btn{
+  width:32px;height:32px;border-radius:50%;background:var(--card2);
+  border:1px solid var(--border);cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .1s;color:var(--text);
+}
+.icon-btn:active{transform:scale(.9);}
+.cpd-badge{
+  background:var(--blue);color:#fff;
+  font-family:var(--mono);font-size:.65rem;font-weight:700;
+  padding:5px 11px;border-radius:40px;cursor:pointer;
+  transition:transform .1s;white-space:nowrap;border:none;
+}
+.cpd-badge:active{transform:scale(.95);}
+
+.stats{display:flex;align-items:stretch;border-bottom:1px solid var(--border);}
+.stat{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
+.stat+.stat{border-left:1px solid var(--border);}
+.stat-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);}
+.stat-val{font-family:var(--mono);font-size:1.45rem;font-weight:700;line-height:1;color:var(--text);}
+.stat-sub{font-size:.6rem;color:var(--text3);margin-top:2px;}
+.pbox{
+  background:var(--blue-pale);border-left:1px solid var(--border);
+  padding:12px 14px;text-align:center;min-width:82px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.pnum{font-family:var(--mono);font-size:1.55rem;font-weight:700;color:var(--blue);line-height:1;}
+.plbl{font-size:.58rem;color:var(--blue-mid);margin-top:3px;}
+
+.status{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:background .25s;}
+.status.safe{background:var(--present-bg);}
+.status.warn{background:var(--absent-bg);}
+.status.edge{background:var(--holiday-bg);}
+.stxt{font-size:.75rem;font-weight:500;flex:1;line-height:1.4;}
+.schip{font-family:var(--mono);font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:40px;white-space:nowrap;background:rgba(255,255,255,.5);}
+body.dark .schip{background:rgba(0,0,0,.3);}
+
+.sec-title{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px;}
+.irow{display:flex;gap:8px;}
+.ig{flex:1;display:flex;flex-direction:column;gap:5px;}
+.ig label{font-size:.68rem;color:var(--text2);}
+.ni{
+  background:var(--card2);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);font-family:var(--mono);font-size:1.1rem;font-weight:700;
+  padding:10px 6px;text-align:center;width:100%;color:var(--text);
+  transition:border-color .15s,background .25s;outline:none;
+}
+.ni:focus{border-color:var(--blue);}
+.as{font-size:.6rem;color:var(--text3);text-align:right;margin-top:5px;}
+
+.cal-year-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;background:var(--card2);border-bottom:1px solid var(--border);
+}
+.year-pill{
+  font-family:var(--mono);font-weight:700;font-size:.92rem;
+  color:var(--blue);background:var(--blue-pale);
+  padding:4px 16px;border-radius:30px;border:1px solid var(--blue-b);
+}
+.cal-month-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);}
+.month-label{font-size:1rem;font-weight:700;letter-spacing:-.01em;}
+.month-pct{
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+  color:var(--text2);background:var(--card2);transition:all .25s;
+}
+.month-pct.safe{background:var(--present-bg);border-color:var(--present-b);color:var(--present);}
+.month-pct.warn{background:var(--absent-bg);border-color:var(--absent-b);color:var(--absent);}
+.month-pct.edge{background:var(--holiday-bg);border-color:var(--holiday-b);color:var(--holiday);}
+
+.cal-meta{display:flex;flex-direction:column;align-items:center;padding:6px 0 4px;gap:5px;}
+.month-summary{font-size:.68rem;color:var(--text2);}
+.mdots{display:flex;gap:5px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--text3);transition:background .2s,transform .2s;}
+.dot.active{background:var(--blue);transform:scale(1.4);}
+
+.nav-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  font-size:1rem;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;user-select:none;color:var(--text);
+  transition:background .12s,transform .1s,box-shadow .1s;
+}
+.nav-btn:hover{background:var(--card2);}
+.nav-btn:active{transform:scale(.88);}
+
+.cal-body{padding:8px 10px 14px;}
+.week-header{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
+.wh-cell{text-align:center;font-size:.6rem;font-weight:700;letter-spacing:.04em;color:var(--text3);padding:4px 0 6px;}
+.wh-cell.sun{color:var(--absent);}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+
+.dc{
+  position:relative;border-radius:10px;font-family:var(--mono);font-weight:700;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;user-select:none;aspect-ratio:1 / 1.08;min-height:40px;
+  border:1.5px solid transparent;
+  transition:transform .1s,box-shadow .15s,background .12s,border-color .12s;
+  overflow:hidden;-webkit-tap-highlight-color:transparent;padding:2px 1px;gap:1px;
+}
+.dc:active{transform:scale(.87);}
+.dc.empty{background:transparent!important;border:none!important;pointer-events:none;}
+.dc.notworking{background:var(--notwork-bg);border-color:var(--notwork-b);color:var(--text3);}
+.dc.present{background:var(--present-bg);border-color:var(--present-b);color:var(--present);}
+.dc.absent{background:var(--absent-bg);border-color:var(--absent-b);color:var(--absent);}
+.dc.today{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--blue);z-index:2;}
+.dc.sun-cell.notworking{color:var(--absent);opacity:.7;}
+.dc.is-holiday::before{content:"";position:absolute;top:2px;left:2px;width:5px;height:5px;border-radius:50%;background:var(--holiday);pointer-events:none;z-index:1;}
+.dc-num{font-size:.75rem;font-weight:700;line-height:1;}
+.dc-hname{font-family:var(--ui);font-size:.37rem;font-weight:600;line-height:1.15;max-width:96%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85;}
+.dc-dot{position:absolute;bottom:3px;right:3px;width:5px;height:5px;border-radius:50%;pointer-events:none;}
+.dc.present .dc-dot{background:var(--present);}
+.dc.absent  .dc-dot{background:var(--absent);}
+
+.cal-footer{padding:0 12px 12px;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;}
+
+.btn{font-family:var(--ui);font-size:.73rem;font-weight:600;padding:8px 14px;border-radius:40px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;border:none;transition:transform .1s,opacity .1s;}
+.btn:active{transform:scale(.95);}
+.btn-red{background:var(--absent-bg);border:1px solid var(--absent-b);color:var(--absent);}
+.btn-blue{background:var(--blue);color:#fff;width:100%;justify-content:center;margin-top:10px;}
+.btn-amber{background:var(--holiday-bg);border:1px solid var(--holiday-b);color:var(--holiday);width:100%;justify-content:center;margin-top:8px;}
+.btn-gray{background:var(--card2);border:1px solid var(--border);color:var(--text2);}
+
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;padding:12px 16px;}
+.leg{display:flex;align-items:center;gap:5px;font-size:.65rem;color:var(--text2);}
+.ldot{width:10px;height:10px;border-radius:3px;}
+.l-n{background:var(--notwork-bg);border:1.5px solid var(--notwork-b);}
+.l-p{background:var(--present-bg);border:1.5px solid var(--present-b);}
+.l-a{background:var(--absent-bg);border:1.5px solid var(--absent-b);}
+.l-h{background:var(--holiday-bg);border:1.5px solid var(--holiday-b);}
+
+/* ── MODALS (shared) ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--card);border-radius:22px 22px 0 0;
+  padding:20px 20px 36px;width:100%;max-width:420px;
+  box-shadow:var(--sh2);border:1px solid var(--border);border-bottom:none;
+  animation:slideUp .2s cubic-bezier(.4,0,.2,1);
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:.5}to{transform:none;opacity:1}}
+.modal h3{font-size:.95rem;font-weight:700;margin-bottom:3px;}
+.modal p{font-size:.7rem;color:var(--text2);margin-bottom:14px;}
+.modal-row{display:flex;align-items:center;gap:10px;}
+.stepper-btn{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:50%;width:40px;height:40px;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text);transition:background .1s,transform .1s;
+}
+.stepper-btn:active{transform:scale(.9);}
+#cpdDisplay{font-family:var(--mono);font-size:1.6rem;font-weight:700;flex:1;text-align:center;color:var(--text);}
+.modal-confirm{
+  background:var(--blue);color:#fff;border:none;border-radius:40px;padding:12px 0;
+  font-family:var(--ui);font-weight:700;font-size:.88rem;width:100%;margin-top:14px;cursor:pointer;
+}
+.modal-confirm:active{opacity:.85;}
+
+/* ── TOOLTIP ── */
+.h-tooltip{
+  position:fixed;background:var(--text);color:var(--card);
+  font-family:var(--ui);font-size:.68rem;font-weight:600;
+  padding:6px 10px;border-radius:8px;pointer-events:none;z-index:300;
+  white-space:nowrap;max-width:200px;opacity:0;transition:opacity .15s;
+}
+.h-tooltip.show{opacity:1;}
+
+/* ── CALENDAR SLIDE ── */
+.cal-card{position:relative;overflow:hidden;}
+@keyframes fadeSlideLeft{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes fadeSlideRight{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+.slide-left  .day-grid{animation:fadeSlideLeft .2s ease;}
+.slide-right .day-grid{animation:fadeSlideRight .2s ease;}
+
+.card,.ni,.stat,.pbox,.year-pill,.month-pct,.nav-btn,.modal,.stepper-btn{transition:background .25s,border-color .25s,color .25s;}
+input[type=number]{-moz-appearance:textfield;}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+
+/* ═══════════════════════════════
+   FLOATING HELP BUTTON
+═══════════════════════════════ */
+.help-fab{
+  position:fixed;bottom:24px;right:20px;z-index:150;
+  width:48px;height:48px;border-radius:50%;
+  background:var(--blue);color:#fff;border:none;
+  font-size:1.2rem;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 16px rgba(37,99,235,.45);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s,box-shadow .15s;
+  font-family:var(--mono);
+}
+.help-fab:hover{transform:scale(1.1);box-shadow:0 6px 24px rgba(37,99,235,.55);}
+.help-fab:active{transform:scale(.93);}
+
+/* ═══════════════════════════════
+   GUIDE PANEL (full-screen slide-up)
+═══════════════════════════════ */
+#guidePanel{
+  display:none;
+  position:fixed;inset:0;z-index:400;
+  background:#f5f0e8;
+  flex-direction:column;
+  overflow:hidden;
+}
+body.dark #guidePanel{background:#0c1220;}
+#guidePanel.open{display:flex;animation:guidePanelIn .3s cubic-bezier(.4,0,.2,1);}
+@keyframes guidePanelIn{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
+
+.guide-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;
+  background:#0d1117;
+  color:#f5f0e8;
+  flex-shrink:0;
+}
+body.dark .guide-topbar{background:#0c1220;border-bottom:1px solid #263347;}
+.guide-topbar-title{
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;
+  letter-spacing:-.02em;color:#f5f0e8;
+}
+.guide-topbar-sub{font-size:.62rem;color:rgba(245,240,232,.5);margin-top:1px;}
+.guide-close{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:none;
+  color:#f5f0e8;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .1s;
+}
+.guide-close:active{transform:scale(.88);}
+
+.guide-prog{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 18px;
+  background:#ede8dc;border-bottom:1px solid #c8c0b0;
+  flex-shrink:0;
+}
+body.dark .guide-prog{background:#111827;border-color:#263347;}
+.guide-prog-track{flex:1;height:3px;background:#c8c0b0;border-radius:3px;overflow:hidden;}
+body.dark .guide-prog-track{background:#263347;}
+.guide-prog-fill{height:100%;background:#e8401c;border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+.guide-prog-lbl{font-family:'DM Mono',monospace;font-size:.65rem;color:#7a7060;white-space:nowrap;}
+body.dark .guide-prog-lbl{color:#4a6080;}
+
+.guide-scroll{flex:1;overflow-y:auto;padding:16px 14px 40px;}
+
+/* ── GUIDE STEP CARDS ── */
+.g-step{
+  background:#fff;border:1px solid #c8c0b0;border-radius:16px;
+  overflow:hidden;margin-bottom:10px;cursor:pointer;
+  transition:box-shadow .15s;
+}
+body.dark .g-step{background:#1a2334;border-color:#263347;}
+.g-step:hover{box-shadow:0 4px 20px rgba(13,17,23,.1);}
+.g-step.expanded{box-shadow:0 6px 28px rgba(13,17,23,.12);}
+
+.g-step-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;}
+.g-num{
+  font-family:'DM Mono',monospace;font-size:.68rem;font-weight:500;
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;border:2px solid #c8c0b0;color:#7a7060;transition:all .2s;
+}
+body.dark .g-num{border-color:#263347;color:#4a6080;}
+.g-step.expanded .g-num,.g-step.done .g-num{background:#e8401c;border-color:#e8401c;color:#fff;}
+.g-icon{font-size:1.3rem;flex-shrink:0;}
+.g-title-wrap{flex:1;}
+.g-title{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:#0d1117;}
+body.dark .g-title{color:#f0f4ff;}
+.g-tag{font-size:.68rem;color:#7a7060;margin-top:1px;}
+body.dark .g-tag{color:#4a6080;}
+.g-chev{font-size:.78rem;color:#7a7060;transition:transform .3s;flex-shrink:0;}
+.g-step.expanded .g-chev{transform:rotate(180deg);}
+
+.g-body{max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.4,0,.2,1);}
+.g-step.expanded .g-body{max-height:1400px;}
+.g-content{border-top:1px solid #c8c0b0;padding:16px;}
+body.dark .g-content{border-color:#263347;}
+
+/* Guide mockups */
+.gm{
+  background:#f8faff;border:1.5px solid #dde4f0;border-radius:12px;
+  padding:12px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:.78rem;
+}
+body.dark .gm{background:#111827;border-color:#263347;}
+.gm-lbl{
+  font-family:'DM Sans',sans-serif;font-size:.58rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:#7a7060;
+  margin-bottom:8px;display:flex;align-items:center;gap:5px;
+}
+.gm-lbl::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#e8401c;}
+
+.gm-stats{display:flex;gap:6px;flex-wrap:wrap;}
+.gm-stat{flex:1;min-width:72px;background:#fff;border:1px solid #dde4f0;border-radius:8px;padding:8px 10px;}
+body.dark .gm-stat{background:#0c1220;border-color:#263347;}
+.gm-slbl{font-size:.52rem;text-transform:uppercase;letter-spacing:.06em;color:#8fa0b8;}
+.gm-sval{font-size:1.2rem;font-weight:700;color:#111827;margin-top:2px;}
+body.dark .gm-sval{color:#f0f4ff;}
+.gm-ssub{font-size:.55rem;color:#8fa0b8;margin-top:1px;}
+.gm-pct{background:#eff4ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.gm-pnum{font-size:1.3rem;font-weight:700;color:#2563eb;}
+.gm-plbl{font-size:.52rem;color:#3b82f6;margin-top:2px;}
+.gm-banner{margin-top:6px;border-radius:8px;padding:8px 12px;font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.gm-banner.safe{background:#dcfce7;color:#16a34a;}
+.gm-banner.warn{background:#fee2e2;color:#dc2626;}
+.gm-chip{font-family:'DM Mono',monospace;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.55);}
+
+.gm-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:6px;}
+.gm-wh{text-align:center;font-size:.52rem;font-weight:700;color:#8fa0b8;padding:2px 0 4px;}
+.gm-wh.sun{color:#dc2626;}
+.gm-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1.5px solid transparent;}
+.gm-day.nw{background:#f0f4ff;border-color:#dde4f0;color:#8fa0b8;}
+.gm-day.pr{background:#dcfce7;border-color:#86efac;color:#16a34a;}
+.gm-day.ab{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+.gm-day.hl{background:#fef3c7;border-color:#fcd34d;color:#d97706;position:relative;}
+.gm-day.hl::after{content:'';position:absolute;top:2px;left:2px;width:4px;height:4px;border-radius:50%;background:#d97706;}
+.gm-day.sun{color:#dc2626;opacity:.7;}
+.gm-day.today{box-shadow:0 0 0 1.5px #fff,0 0 0 3px #2563eb;}
+
+.cycle-row{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px;background:#f8faff;border:1.5px solid #dde4f0;border-radius:12px;margin-bottom:14px;
+}
+body.dark .cycle-row{background:#111827;border-color:#263347;}
+.cy{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.cy-box{
+  width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:.82rem;font-weight:700;border:1.5px solid;
+}
+.cy-box.nw{background:#f0f4ff;border-color:#dde4f0;color:#8fa0b8;}
+.cy-box.pr{background:#dcfce7;border-color:#86efac;color:#16a34a;}
+.cy-box.ab{background:#fee2e2;border-color:#fca5a5;color:#dc2626;}
+.cy-lbl{font-family:'DM Sans',sans-serif;font-size:.58rem;color:#7a7060;}
+.cy-arr{font-size:1rem;color:#c8c0b0;}
+
+/* Guide how-to list */
+.hw-list{display:flex;flex-direction:column;gap:8px;}
+.hw-item{display:flex;gap:10px;align-items:flex-start;}
+.hw-n{
+  font-family:'DM Mono',monospace;font-size:.62rem;font-weight:500;
+  min-width:20px;height:20px;background:#0d1117;color:#f5f0e8;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;margin-top:2px;flex-shrink:0;
+}
+body.dark .hw-n{background:#f0f4ff;color:#0c1220;}
+.hw-t{font-size:.78rem;line-height:1.55;color:#2a3040;}
+body.dark .hw-t{color:#8fa5c5;}
+.hw-t strong{color:#0d1117;}
+body.dark .hw-t strong{color:#f0f4ff;}
+.hw-t code{font-family:'DM Mono',monospace;font-size:.72rem;background:#ede8dc;padding:1px 4px;border-radius:3px;border:1px solid #c8c0b0;}
+body.dark .hw-t code{background:#202c3e;border-color:#263347;color:#8fa5c5;}
+
+.g-tip{display:flex;gap:8px;background:#0d1117;color:#f5f0e8;border-radius:10px;padding:10px 14px;margin-top:12px;font-size:.75rem;line-height:1.5;}
+body.dark .g-tip{background:#202c3e;color:#8fa5c5;}
+.g-tip-icon{flex-shrink:0;margin-top:1px;}
+
+/* CPD demo */
+.gm-cpd{background:#fff;border:1px solid #dde4f0;border-radius:8px;padding:12px;text-align:center;}
+body.dark .gm-cpd{background:#0c1220;border-color:#263347;}
+.gm-cpd-title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:#0d1117;margin-bottom:2px;}
+body.dark .gm-cpd-title{color:#f0f4ff;}
+.gm-cpd-sub{font-size:.62rem;color:#8fa0b8;margin-bottom:10px;}
+.gm-stepper{display:flex;align-items:center;justify-content:center;gap:12px;}
+.gm-sbtn{width:34px;height:34px;border-radius:50%;background:#f0f4ff;border:1px solid #dde4f0;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#111827;}
+body.dark .gm-sbtn{background:#202c3e;border-color:#263347;color:#f0f4ff;}
+.gm-sval{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:700;color:#111827;}
+body.dark .gm-sval{color:#f0f4ff;}
+
+/* Override */
+.gm-ov{background:#fff;border:1.5px solid #dde4f0;border-radius:12px;padding:12px;}
+body.dark .gm-ov{background:#0c1220;border-color:#263347;}
+.gm-input-row{display:flex;gap:6px;margin-bottom:8px;}
+.gm-inp{flex:1;background:#f8faff;border:1.5px solid #dde4f0;border-radius:7px;padding:7px;text-align:center;font-family:'DM Mono',monospace;font-size:.92rem;font-weight:700;color:#111827;}
+body.dark .gm-inp{background:#111827;border-color:#263347;color:#f0f4ff;}
+.gm-btn-b{width:100%;background:#2563eb;color:#fff;border:none;border-radius:20px;padding:8px;font-size:.73rem;font-weight:700;margin-bottom:5px;}
+.gm-btn-a{width:100%;background:#fef3c7;border:1px solid #fcd34d;border-radius:20px;padding:8px;font-size:.73rem;font-weight:700;color:#d97706;}
+
+/* Done section */
+.g-done{
+  background:#0d1117;color:#f5f0e8;border-radius:16px;
+  padding:28px 20px;text-align:center;margin-top:4px;
+}
+body.dark .g-done{background:#202c3e;border:1px solid #263347;}
+.g-done-icon{font-size:2.2rem;margin-bottom:10px;}
+.g-done h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
+.g-done p{font-size:.78rem;color:rgba(245,240,232,.6);line-height:1.55;}
+.g-done-marks{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.g-done-mark{display:flex;align-items:center;gap:5px;font-size:.68rem;color:rgba(245,240,232,.5);}
+.g-done-dot{width:7px;height:7px;border-radius:50%;}
+
+@keyframes pulse{
+  0%,100%{box-shadow:0 0 0 1.5px #fff,0 0 0 3px #2563eb;}
+  50%{box-shadow:0 0 0 1.5px #fff,0 0 0 5px rgba(37,99,235,.4);}
+}
+.gm-day.today{animation:pulse 2s infinite;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- CARD 1 -->
+<div class="card">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">Attendance · 2026–2029</div>
+      <div class="hdr-sub">Tap to cycle · Holidays auto-marked</div>
+    </div>
+    <div class="hdr-right">
+      <button class="icon-btn" id="darkModeBtn" title="Toggle dark mode">🌙</button>
+      <button class="cpd-badge" id="cpdBadge">7/day</button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Total</div>
+      <div class="stat-val" id="combinedTotal">0</div>
+      <div class="stat-sub" id="totalDaysSpan">0 days</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Present</div>
+      <div class="stat-val" id="combinedPresent">0</div>
+      <div class="stat-sub" id="presentDaysSpan">0 days</div>
+    </div>
+    <div class="pbox">
+      <div class="pnum" id="combinedPercent">0.0</div>
+      <div class="plbl">% overall</div>
+    </div>
+  </div>
+  <div class="status safe" id="statusBanner">
+    <div class="stxt" id="statusText">No classes recorded yet.</div>
+    <div class="schip" id="statusChip">–</div>
+  </div>
+</div>
+
+<!-- CARD 2 -->
+<div class="card">
+  <div class="p">
+    <div class="sec-title">Previous classes</div>
+    <div class="irow">
+      <div class="ig"><label>Total</label><input class="ni" type="number" id="prevTotal" value="0" min="0"></div>
+      <div class="ig"><label>Present</label><input class="ni" type="number" id="prevPresent" value="0" min="0"></div>
+    </div>
+    <div class="as">💾 auto-saved</div>
+  </div>
+</div>
+
+<!-- CARD 3: Calendar -->
+<div class="card cal-card" id="calCard">
+  <div class="cal-year-nav">
+    <button class="nav-btn" id="prevYearBtn">◀</button>
+    <span class="year-pill" id="currentYearDisplay">2026</span>
+    <button class="nav-btn" id="nextYearBtn">▶</button>
+  </div>
+  <div class="cal-month-nav">
+    <button class="nav-btn" id="prevMonthBtn">‹</button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <span class="month-label" id="currentMonthLabel">January 2026</span>
+      <span class="month-pct" id="monthPct">–</span>
+    </div>
+    <button class="nav-btn" id="nextMonthBtn">›</button>
+  </div>
+  <div class="cal-meta">
+    <div class="month-summary" id="monthSummary"></div>
+    <div class="mdots" id="monthDots"></div>
+  </div>
+  <div class="cal-body">
+    <div class="week-header">
+      <div class="wh-cell sun">Sun</div>
+      <div class="wh-cell">Mon</div><div class="wh-cell">Tue</div>
+      <div class="wh-cell">Wed</div><div class="wh-cell">Thu</div>
+      <div class="wh-cell">Fri</div><div class="wh-cell">Sat</div>
+    </div>
+    <div class="day-grid" id="daysGrid"></div>
+  </div>
+  <div class="cal-footer">
+    <button class="btn btn-red" id="clearCalendarBtn">🗑 Clear month</button>
+    <div style="display:flex;gap:5px;">
+      <button class="btn btn-gray" id="presetPresent">✅ All present</button>
+      <button class="btn btn-gray" id="presetAbsent">❌ All absent</button>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 4: Legend -->
+<div class="card">
+  <div class="legend">
+    <div class="leg"><div class="ldot l-n"></div>Not working</div>
+    <div class="leg"><div class="ldot l-p"></div>Present</div>
+    <div class="leg"><div class="ldot l-a"></div>Absent</div>
+    <div class="leg"><div class="ldot l-h"></div>Holiday</div>
+    <div class="leg"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;border:2.5px solid var(--blue)"></span>Today</div>
+  </div>
+</div>
+
+<!-- CARD 5: Manual override -->
+<div class="card">
+  <div class="p">
+    <div class="sec-title">Manual override · all months</div>
+    <div class="irow">
+      <div class="ig"><label>Total classes</label><input class="ni" type="number" id="calTotal" value="0" min="0"></div>
+      <div class="ig"><label>Present classes</label><input class="ni" type="number" id="calPresent" value="0" min="0"></div>
+    </div>
+    <button class="btn btn-blue" id="syncCalendarBtn">⚡ Sync calendar from numbers</button>
+    <button class="btn btn-amber" id="resetAllBtn">⚠️ Reset all to zero</button>
+    <div style="font-size:.6rem;color:var(--text3);text-align:center;margin-top:8px">Fills from Jan 1, 2026 · rounds to full days</div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<!-- Tooltip -->
+<div class="h-tooltip" id="hTooltip"></div>
+
+<!-- CPD Modal -->
+<div class="overlay" id="cpdOverlay">
+  <div class="modal">
+    <h3>Classes per day</h3>
+    <p>Default is 7. Changes apply to all calendar days.</p>
+    <div class="modal-row">
+      <button class="stepper-btn" id="cpdMinus">−</button>
+      <div id="cpdDisplay">7</div>
+      <button class="stepper-btn" id="cpdPlus">+</button>
+    </div>
+    <button class="modal-confirm" id="cpdConfirm">Done</button>
+  </div>
+</div>
+
+<!-- ── FLOATING HELP BUTTON ── -->
+<button class="help-fab" id="helpFab" title="How to use">?</button>
+
+<!-- ═══════════════════════════════════════
+     GUIDE PANEL
+═══════════════════════════════════════ -->
+<div id="guidePanel">
+  <div class="guide-topbar">
+    <div>
+      <div class="guide-topbar-title">How to use this app</div>
+      <div class="guide-topbar-sub">Tap each section to expand</div>
+    </div>
+    <button class="guide-close" id="guideClose">✕</button>
+  </div>
+
+  <div class="guide-prog">
+    <div class="guide-prog-track"><div class="guide-prog-fill" id="gProgFill" style="width:0%"></div></div>
+    <div class="guide-prog-lbl" id="gProgLbl">0 / 6 read</div>
+  </div>
+
+  <div class="guide-scroll">
+
+    <!-- G-STEP 1 -->
+    <div class="g-step" id="gs-0">
+      <div class="g-step-hdr" onclick="gtoggle(0)">
+        <div class="g-num">1</div>
+        <div class="g-icon">📊</div>
+        <div class="g-title-wrap">
+          <div class="g-title">Dashboard at a Glance</div>
+          <div class="g-tag">Understand every number</div>
+        </div>
+        <div class="g-chev">▼</div>
+      </div>
+      <div class="g-body"><div class="g-content">
+        <div class="gm">
+          <div class="gm-lbl">Stats card</div>
+          <div class="gm-stats">
+            <div class="gm-stat"><div class="gm-slbl">Total</div><div class="gm-sval">140</div><div class="gm-ssub">20 days</div></div>
+            <div class="gm-stat"><div class="gm-slbl">Present</div><div class="gm-sval">112</div><div class="gm-ssub">16 days</div></div>
+            <div class="gm-pct"><div class="gm-pnum">80.0</div><div class="gm-plbl">% overall</div></div>
+          </div>
+          <div class="gm-banner safe">At 80.0% — you can safely bunk:<div class="gm-chip">1 day</div></div>
+        </div>
+        <div class="hw-list">
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>Total</strong> = all working class slots (present + absent days × CPD)</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>Present</strong> = classes you attended</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>% overall</strong> = Present ÷ Total × 100</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">The <strong>status banner</strong> turns green above 75% and shows how many classes you can safely miss — or need to attend to recover</div></div>
+        </div>
+        <div class="g-tip"><div class="g-tip-icon">💡</div>75% is the standard attendance requirement. Keep the banner green!</div>
+      </div></div>
+    </div>
+
+    <!-- G-STEP 2 -->
+    <div class="g-step" id="gs-1">
+      <div class="g-step-hdr" onclick="gtoggle(1)">
+        <div class="g-num">2</div>
+        <div class="g-icon">📅</div>
+        <div class="g-title-wrap">
+          <div class="g-title">Marking Days</div>
+          <div class="g-tag">Tap any date to cycle its state</div>
+        </div>
+        <div class="g-chev">▼</div>
+      </div>
+      <div class="g-body"><div class="g-content">
+        <div class="cycle-row">
+          <div class="cy"><div class="cy-box nw">15</div><div class="cy-lbl">Not working</div></div>
+          <div class="cy-arr">→</div>
+          <div class="cy"><div class="cy-box pr">15</div><div class="cy-lbl">Present</div></div>
+          <div class="cy-arr">→</div>
+          <div class="cy"><div class="cy-box ab">15</div><div class="cy-lbl">Absent</div></div>
+          <div class="cy-arr">→</div>
+          <div class="cy"><div class="cy-box nw">15</div><div class="cy-lbl">Not working</div></div>
+        </div>
+        <div class="gm">
+          <div class="gm-lbl">Sample week</div>
+          <div class="gm-cal">
+            <div class="gm-wh sun">S</div><div class="gm-wh">M</div><div class="gm-wh">T</div><div class="gm-wh">W</div><div class="gm-wh">T</div><div class="gm-wh">F</div><div class="gm-wh">S</div>
+            <div class="gm-day sun nw">1</div><div class="gm-day pr">2</div><div class="gm-day pr">3</div><div class="gm-day ab">4</div><div class="gm-day pr">5</div><div class="gm-day pr">6</div><div class="gm-day nw">7</div>
+            <div class="gm-day sun nw">8</div><div class="gm-day pr">9</div><div class="gm-day today pr">10</div><div class="gm-day hl">11</div><div class="gm-day nw">12</div><div class="gm-day nw">13</div><div class="gm-day nw">14</div>
+          </div>
+        </div>
+        <div class="hw-list">
+          <div class="hw-item"><div class="hw-n">1</div><div class="hw-t">Navigate to the month you want</div></div>
+          <div class="hw-item"><div class="hw-n">2</div><div class="hw-t"><strong>Tap once</strong> → <span style="color:#16a34a;font-weight:600">Present</span> (green)</div></div>
+          <div class="hw-item"><div class="hw-n">3</div><div class="hw-t"><strong>Tap again</strong> → <span style="color:#dc2626;font-weight:600">Absent</span> (red)</div></div>
+          <div class="hw-item"><div class="hw-n">4</div><div class="hw-t"><strong>Tap third time</strong> → Not Working (grey, doesn't count)</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>Sundays</strong> start as "not working" — tap if you had Sunday classes</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">Days with an <strong>orange dot</strong> are national holidays — tap to see the name</div></div>
+        </div>
+        <div class="g-tip"><div class="g-tip-icon">⚡</div>Use <strong>✅ All present</strong> or <strong>❌ All absent</strong> at the bottom to bulk-fill the whole month (Sundays excluded).</div>
+      </div></div>
+    </div>
+
+    <!-- G-STEP 3 -->
+    <div class="g-step" id="gs-2">
+      <div class="g-step-hdr" onclick="gtoggle(2)">
+        <div class="g-num">3</div>
+        <div class="g-icon">🗓️</div>
+        <div class="g-title-wrap">
+          <div class="g-title">Navigating Months & Years</div>
+          <div class="g-tag">Jump anywhere 2026–2029</div>
+        </div>
+        <div class="g-chev">▼</div>
+      </div>
+      <div class="g-body"><div class="g-content">
+        <div class="gm">
+          <div class="gm-lbl">Navigation controls</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #dde4f0;border-radius:8px;padding:7px 12px;">
+              <span style="background:#f0f4ff;border:1px solid #dde4f0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;">◀</span>
+              <span style="font-family:'DM Mono',monospace;font-size:.85rem;font-weight:700;color:#2563eb;background:#eff4ff;padding:3px 14px;border-radius:20px;border:1px solid #bfdbfe;">2026</span>
+              <span style="background:#f0f4ff;border:1px solid #dde4f0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.8rem;">▶</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #dde4f0;border-radius:8px;padding:9px 12px;">
+              <span style="background:#f0f4ff;border:1px solid #dde4f0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.9rem;">‹</span>
+              <div style="text-align:center;">
+                <div style="font-weight:700;font-size:.9rem;">March 2026</div>
+                <div style="font-size:.6rem;margin-top:2px;background:#dcfce7;border:1px solid #86efac;color:#16a34a;padding:2px 8px;border-radius:12px;font-family:'DM Mono',monospace;display:inline-block;">80.0%</div>
+              </div>
+              <span style="background:#f0f4ff;border:1px solid #dde4f0;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.9rem;">›</span>
+            </div>
+          </div>
+        </div>
+        <div class="hw-list">
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">Use <code>‹ ›</code> to go one <strong>month</strong> back/forward</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">Use <code>◀ ▶</code> to jump a full <strong>year</strong> at once</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">On mobile: <strong>swipe left/right</strong> on the calendar to change months</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">The <strong>coloured % badge</strong> shows attendance for that month only</div></div>
+        </div>
+        <div class="g-tip"><div class="g-tip-icon">📍</div>Today is always highlighted with a <span style="color:#2563eb;font-weight:600">blue ring</span>.</div>
+      </div></div>
+    </div>
+
+    <!-- G-STEP 4 -->
+    <div class="g-step" id="gs-3">
+      <div class="g-step-hdr" onclick="gtoggle(3)">
+        <div class="g-num">4</div>
+        <div class="g-icon">📝</div>
+        <div class="g-title-wrap">
+          <div class="g-title">Adding Previous Classes</div>
+          <div class="g-tag">Include old semester attendance</div>
+        </div>
+        <div class="g-chev">▼</div>
+      </div>
+      <div class="g-body"><div class="g-content">
+        <div class="gm">
+          <div class="gm-lbl">Previous classes card</div>
+          <div style="display:flex;gap:7px;">
+            <div style="flex:1;"><div style="font-size:.6rem;color:#8fa0b8;margin-bottom:4px;">Total</div><div class="gm-inp">350</div></div>
+            <div style="flex:1;"><div style="font-size:.6rem;color:#8fa0b8;margin-bottom:4px;">Present</div><div class="gm-inp">280</div></div>
+          </div>
+          <div style="font-size:.58rem;color:#8fa0b8;text-align:right;margin-top:5px;">💾 auto-saved</div>
+        </div>
+        <div class="hw-list">
+          <div class="hw-item"><div class="hw-n">1</div><div class="hw-t">Find the <strong>"Previous Classes"</strong> card (second card on the page)</div></div>
+          <div class="hw-item"><div class="hw-n">2</div><div class="hw-t">Enter <strong>Total</strong> classes from your previous semester/period</div></div>
+          <div class="hw-item"><div class="hw-n">3</div><div class="hw-t">Enter how many you were <strong>Present</strong> for</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">These combine with calendar data for one accurate overall %</div></div>
+        </div>
+        <div class="g-tip"><div class="g-tip-icon">💾</div>All data is auto-saved to your browser — persists across page reloads.</div>
+      </div></div>
+    </div>
+
+    <!-- G-STEP 5 -->
+    <div class="g-step" id="gs-4">
+      <div class="g-step-hdr" onclick="gtoggle(4)">
+        <div class="g-num">5</div>
+        <div class="g-icon">⚙️</div>
+        <div class="g-title-wrap">
+          <div class="g-title">Classes Per Day (CPD)</div>
+          <div class="g-tag">Adjust for your schedule</div>
+        </div>
+        <div class="g-chev">▼</div>
+      </div>
+      <div class="g-body"><div class="g-content">
+        <div class="gm">
+          <div class="gm-lbl">CPD badge & modal</div>
+          <div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #dde4f0;border-radius:8px;padding:8px 12px;margin-bottom:8px;">
+            <span style="font-size:.75rem;color:#4b5c74;">Tap the blue badge:</span>
+            <span style="background:#2563eb;color:#fff;font-family:'DM Mono',monospace;font-size:.68rem;font-weight:700;padding:4px 11px;border-radius:30px;" id="gCpdBadge">7/day</span>
+          </div>
+          <div class="gm-cpd">
+            <div class="gm-cpd-title">Classes per day</div>
+            <div class="gm-cpd-sub">Default is 7. Applies to all days.</div>
+            <div class="gm-stepper">
+              <div class="gm-sbtn" onclick="gChangeCPD(-1)">−</div>
+              <div class="gm-sval" id="gCpdVal">7</div>
+              <div class="gm-sbtn" onclick="gChangeCPD(1)">+</div>
+            </div>
+          </div>
+        </div>
+        <div class="hw-list">
+          <div class="hw-item"><div class="hw-n">1</div><div class="hw-t">Tap the <strong>blue <code>7/day</code> badge</strong> in the top-right header</div></div>
+          <div class="hw-item"><div class="hw-n">2</div><div class="hw-t">Use <strong>− / +</strong> to set how many classes per working day (1–20)</div></div>
+          <div class="hw-item"><div class="hw-n">3</div><div class="hw-t">Tap <strong>Done</strong> — stats recalculate immediately</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">1 Present day = CPD classes attended. Getting this right makes counts accurate</div></div>
+        </div>
+        <div class="g-tip"><div class="g-tip-icon">🔢</div>If your college has 6 classes/day, set CPD to 6.</div>
+      </div></div>
+    </div>
+
+    <!-- G-STEP 6 -->
+    <div class="g-step" id="gs-5">
+      <div class="g-step-hdr" onclick="gtoggle(5)">
+        <div class="g-num">6</div>
+        <div class="g-icon">🔧</div>
+        <div class="g-title-wrap">
+          <div class="g-title">Manual Override & Reset</div>
+          <div class="g-tag">Sync from numbers or start fresh</div>
+        </div>
+        <div class="g-chev">▼</div>
+      </div>
+      <div class="g-body"><div class="g-content">
+        <div class="gm">
+          <div class="gm-lbl">Override card</div>
+          <div class="gm-ov">
+            <div class="gm-input-row">
+              <div><div style="font-size:.58rem;color:#8fa0b8;margin-bottom:3px;">Total classes</div><div class="gm-inp">700</div></div>
+              <div><div style="font-size:.58rem;color:#8fa0b8;margin-bottom:3px;">Present classes</div><div class="gm-inp">560</div></div>
+            </div>
+            <div class="gm-btn-b">⚡ Sync calendar from numbers</div>
+            <div class="gm-btn-a">⚠️ Reset all to zero</div>
+          </div>
+        </div>
+        <div class="hw-list">
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>Sync calendar</strong>: Enter your total & present counts → Sync fills calendar days from Jan 1, 2026 (present first, then absent)</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t">Rounds to full days (divides by CPD) — decimal classes ignored</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>Reset all to zero</strong>: Wipes entire calendar + previous classes instantly</div></div>
+          <div class="hw-item"><div class="hw-n">→</div><div class="hw-t"><strong>🗑 Clear month</strong> (calendar footer): Resets only the current month to "not working"</div></div>
+        </div>
+        <div class="g-tip"><div class="g-tip-icon">⚠️</div>Reset all to zero has <strong>no confirmation</strong> — be careful!</div>
+      </div></div>
+    </div>
+
+    <!-- Done -->
+    <div class="g-done">
+      <div class="g-done-icon">🎓</div>
+      <h2>You're all set!</h2>
+      <p>Navigate to your current month, tap days to mark them, and watch your attendance % update live.</p>
+      <div class="g-done-marks">
+        <div class="g-done-mark"><div class="g-done-dot" style="background:#16a34a"></div>Green = Present</div>
+        <div class="g-done-mark"><div class="g-done-dot" style="background:#dc2626"></div>Red = Absent</div>
+        <div class="g-done-mark"><div class="g-done-dot" style="background:#6b7a90"></div>Grey = Not working</div>
+        <div class="g-done-mark"><div class="g-done-dot" style="background:#d97706"></div>Dot = Holiday</div>
+      </div>
+    </div>
+
+  </div><!-- .guide-scroll -->
+</div><!-- #guidePanel -->
+
+<script>
+(function(){
+'use strict';
+
+/* ═══════════════ APP LOGIC ═══════════════ */
+const Y0=2026,Y1=2029;
+const MONTHS=[];
+let _off=0;
+for(let y=Y0;y<=Y1;y++){
+  for(let m=0;m<12;m++){
+    const days=new Date(y,m+1,0).getDate();
+    MONTHS.push({year:y,month:m,name:new Date(y,m,1).toLocaleString('default',{month:'long'}),days,startOffset:_off});
+    _off+=days;
+  }
+}
+const TOTAL=_off;
+
+const HOLIDAYS_RAW=[
+  [2026,0,14,"Pongal"],[2026,0,14,"Makar Sankranti"],[2026,0,23,"Vasant Panchami"],[2026,0,26,"Republic Day"],
+  [2026,1,15,"Maha Shivaratri"],[2026,1,19,"Ramadan Start"],
+  [2026,2,4,"Holi"],[2026,2,19,"Ugadi"],[2026,2,19,"Gudi Padwa"],[2026,2,21,"Eid ul-Fitr"],[2026,2,26,"Rama Navami"],[2026,2,31,"Mahavir Jayanti"],
+  [2026,3,3,"Good Friday"],[2026,3,14,"Ambedkar Jayanti"],
+  [2026,4,1,"Buddha Purnima"],[2026,4,27,"Eid ul-Adha"],[2026,5,26,"Muharram"],[2026,6,16,"Rath Yatra"],
+  [2026,7,15,"Independence Day"],[2026,7,26,"Milad-un-Nabi"],[2026,7,26,"Onam"],[2026,7,28,"Raksha Bandhan"],
+  [2026,8,4,"Janmashtami"],[2026,8,14,"Ganesh Chaturthi"],
+  [2026,9,2,"Gandhi Jayanti"],[2026,9,20,"Dussehra"],[2026,9,29,"Karva Chauth"],
+  [2026,10,8,"Diwali"],[2026,10,11,"Bhai Dooj"],[2026,10,15,"Chhat Puja"],[2026,10,24,"Guru Nanak Jayanti"],[2026,11,25,"Christmas"],
+  [2027,0,15,"Pongal"],[2027,0,15,"Makar Sankranti"],[2027,0,26,"Republic Day"],
+  [2027,1,9,"Ramadan Start"],[2027,1,11,"Vasant Panchami"],
+  [2027,2,6,"Maha Shivaratri"],[2027,2,10,"Eid ul-Fitr"],[2027,2,22,"Holi"],[2027,2,26,"Good Friday"],
+  [2027,3,7,"Ugadi"],[2027,3,7,"Gudi Padwa"],[2027,3,14,"Ambedkar Jayanti"],[2027,3,15,"Rama Navami"],
+  [2027,4,17,"Eid ul-Adha"],[2027,5,16,"Muharram"],[2027,6,5,"Rath Yatra"],
+  [2027,7,15,"Independence Day"],[2027,7,17,"Raksha Bandhan"],[2027,7,25,"Janmashtami"],
+  [2027,8,4,"Ganesh Chaturthi"],[2027,8,12,"Onam"],
+  [2027,9,2,"Gandhi Jayanti"],[2027,9,9,"Dussehra"],[2027,9,18,"Karva Chauth"],[2027,9,29,"Diwali"],
+  [2027,10,4,"Chhat Puja"],[2027,11,25,"Christmas"],
+  [2028,0,15,"Pongal"],[2028,0,15,"Makar Sankranti"],[2028,0,26,"Republic Day"],[2028,0,29,"Ramadan Start"],[2028,0,31,"Vasant Panchami"],
+  [2028,1,23,"Maha Shivaratri"],[2028,1,27,"Eid ul-Fitr"],
+  [2028,2,11,"Holi"],[2028,2,27,"Ugadi"],[2028,2,27,"Gudi Padwa"],
+  [2028,3,3,"Rama Navami"],[2028,3,14,"Good Friday"],[2028,3,14,"Ambedkar Jayanti"],
+  [2028,4,4,"Buddha Purnima"],[2028,4,6,"Eid ul-Adha"],[2028,5,24,"Muharram"],
+  [2028,7,5,"Rath Yatra"],[2028,7,13,"Raksha Bandhan"],[2028,7,13,"Janmashtami"],[2028,7,15,"Independence Day"],
+  [2028,8,1,"Onam"],[2028,8,23,"Ganesh Chaturthi"],
+  [2028,9,2,"Gandhi Jayanti"],[2028,9,7,"Karva Chauth"],[2028,9,17,"Diwali"],
+  [2028,11,25,"Christmas"],
+  [2029,0,14,"Pongal"],[2029,0,14,"Makar Sankranti"],[2029,0,17,"Ramadan Start"],[2029,0,19,"Vasant Panchami"],[2029,0,26,"Republic Day"],
+  [2029,1,11,"Maha Shivaratri"],[2029,1,15,"Eid ul-Fitr"],
+  [2029,2,1,"Holi"],[2029,2,30,"Good Friday"],
+  [2029,3,14,"Ugadi"],[2029,3,14,"Gudi Padwa"],[2029,3,14,"Ambedkar Jayanti"],[2029,3,22,"Rama Navami"],[2029,3,25,"Eid ul-Adha"],
+  [2029,4,25,"Muharram"],[2029,6,13,"Rath Yatra"],
+  [2029,7,15,"Independence Day"],[2029,7,22,"Onam"],[2029,7,23,"Raksha Bandhan"],
+  [2029,8,1,"Janmashtami"],[2029,8,11,"Ganesh Chaturthi"],
+  [2029,9,2,"Gandhi Jayanti"],[2029,9,16,"Dussehra"],[2029,9,26,"Karva Chauth"],
+  [2029,10,5,"Diwali"],[2029,10,11,"Chhat Puja"],
+  [2029,11,25,"Christmas"]
+];
+
+const hmap=Array.from({length:TOTAL},()=>[]);
+for(const[yr,mo,dy,...names]of HOLIDAYS_RAW){
+  const mi=MONTHS.findIndex(m=>m.year===yr&&m.month===mo);
+  if(mi<0)continue;
+  const idx=MONTHS[mi].startOffset+dy-1;
+  if(idx>=0&&idx<TOTAL)hmap[idx].push(...names);
+}
+
+let dayStates=new Array(TOTAL).fill(0);
+let curMI=0;
+let cpd=7,cpdTmp=7;
+
+const store=(()=>{
+  const fake={_d:{},setItem(k,v){this._d[k]=String(v)},getItem(k){return this._d[k]||null}};
+  try{localStorage.setItem('__x','1');localStorage.removeItem('__x');return localStorage;}catch(e){return fake;}
+})();
+
+function save(){
+  try{
+    store.setItem('att5_pt',g('prevTotal').value);
+    store.setItem('att5_pp',g('prevPresent').value);
+    store.setItem('att5_ds',JSON.stringify(dayStates));
+    store.setItem('att5_cpd',cpd);
+    store.setItem('att5_dark',document.body.classList.contains('dark')?'1':'0');
+  }catch(e){}
+}
+
+function load(){
+  try{
+    const pt=store.getItem('att5_pt'),pp=store.getItem('att5_pp');
+    if(pt!==null)g('prevTotal').value=pt;
+    if(pp!==null)g('prevPresent').value=pp;
+    const sc=store.getItem('att5_cpd');
+    if(sc)cpd=Math.max(1,parseInt(sc)||7);
+    if(store.getItem('att5_dark')==='1'){document.body.classList.add('dark');g('darkModeBtn').textContent='☀️';}
+    const ds=store.getItem('att5_ds');
+    if(ds){
+      const arr=JSON.parse(ds);
+      if(arr&&arr.length===TOTAL)for(let i=0;i<TOTAL;i++)dayStates[i]=[0,1,2].includes(arr[i])?arr[i]:0;
+      else dayStates.fill(0);
+    }
+  }catch(e){dayStates.fill(0);}
+  curMI=todayMI();
+}
+
+function todayMI(){
+  const n=new Date(),y=n.getFullYear(),m=n.getMonth();
+  if(y<Y0||y>Y1)return 0;
+  return Math.max(0,MONTHS.findIndex(mo=>mo.year===y&&mo.month===m));
+}
+
+function g(id){return document.getElementById(id);}
+
+function fmtClasses(n){
+  if(n<=0)return'0 classes';
+  const d=Math.floor(n/cpd),r=n%cpd;
+  const ds=d>0?d+(d>1?' days':' day'):'';
+  const cs=r>0?r+(r>1?' classes':' class'):'';
+  return ds&&cs?ds+' '+cs:ds||cs;
+}
+
+function pctClass(pct){return pct>=75?'safe':pct>=70?'edge':'warn';}
+
+let slideDir='';
+
+function renderCalendar(){
+  const mo=MONTHS[curMI];
+  g('currentMonthLabel').textContent=mo.name+' '+mo.year;
+  g('currentYearDisplay').textContent=mo.year;
+  const off=mo.startOffset;
+  let pw=0,w=0;
+  for(let i=off;i<off+mo.days;i++){if(dayStates[i]===1){pw++;w++;}else if(dayStates[i]===2)w++;}
+  const mPct=w>0?(pw/w*100).toFixed(1):null;
+  const mCls=mPct!==null?pctClass(parseFloat(mPct)):'';
+  g('monthSummary').textContent=w?pw+'/'+w+' present this month':'no working days this month';
+  const mpEl=g('monthPct');
+  mpEl.textContent=mPct!==null?mPct+'%':'–';
+  mpEl.className='month-pct'+(mCls?' '+mCls:'');
+  const tot=MONTHS.length,dc=5;
+  let dh='';
+  for(let j=0;j<dc;j++){const act=Math.floor(curMI/(tot-1)*(dc-1))===j;dh+=`<div class="dot${act?' active':''}"></div>`;}
+  g('monthDots').innerHTML=dh;
+  const grid=g('daysGrid');
+  const calCard=g('calCard');
+  calCard.classList.remove('slide-left','slide-right');
+  if(slideDir){void calCard.offsetWidth;calCard.classList.add(slideDir);slideDir='';}
+  grid.innerHTML='';
+  const firstDow=new Date(mo.year,mo.month,1).getDay();
+  const today=new Date();
+  const todayY=today.getFullYear(),todayM=today.getMonth(),todayD=today.getDate();
+  for(let i=0;i<firstDow;i++){const el=document.createElement('div');el.className='dc empty';grid.appendChild(el);}
+  for(let d=1;d<=mo.days;d++){
+    const idx=off+d-1;
+    const state=dayStates[idx];
+    const dow=(firstDow+d-1)%7;
+    const isSun=dow===0;
+    const isToday=mo.year===todayY&&mo.month===todayM&&d===todayD;
+    const holidays=hmap[idx];
+    const isHoliday=holidays.length>0;
+    const btn=document.createElement('button');
+    let cls='dc';
+    if(state===1)cls+=' present';else if(state===2)cls+=' absent';else cls+=' notworking';
+    if(isSun)cls+=' sun-cell';
+    if(isToday)cls+=' today';
+    if(isHoliday)cls+=' is-holiday';
+    btn.className=cls;
+    const numEl=document.createElement('span');numEl.className='dc-num';numEl.textContent=d;btn.appendChild(numEl);
+    if(isHoliday){
+      const nameEl=document.createElement('span');nameEl.className='dc-hname';
+      let name=holidays[0];if(name.length>10)name=name.slice(0,9)+'…';
+      nameEl.textContent=name;btn.appendChild(nameEl);
+    }
+    if(state===1||state===2){const dotEl=document.createElement('span');dotEl.className='dc-dot';btn.appendChild(dotEl);}
+    if(isHoliday){
+      const fullNames=holidays.join(' · ');
+      btn.addEventListener('pointerenter',e=>showTooltip(e,fullNames));
+      btn.addEventListener('pointerleave',hideTooltip);
+      btn.title=fullNames;
+    }
+    btn.addEventListener('click',(function(i){return function(e){e.preventDefault();dayStates[i]=(dayStates[i]+1)%3;refresh();};})(idx));
+    grid.appendChild(btn);
+  }
+}
+
+const tooltip=g('hTooltip');
+function showTooltip(e,text){tooltip.textContent=text;tooltip.classList.add('show');moveTooltip(e);}
+function moveTooltip(e){let x=e.clientX+12,y=e.clientY-36;if(x+220>window.innerWidth)x=e.clientX-224;if(y<4)y=e.clientY+16;tooltip.style.left=x+'px';tooltip.style.top=y+'px';}
+function hideTooltip(){tooltip.classList.remove('show');}
+
+function refresh(){
+  let prevT=parseInt(g('prevTotal').value)||0;
+  let prevP=parseInt(g('prevPresent').value)||0;
+  if(prevT<0)prevT=0;if(prevP<0)prevP=0;if(prevP>prevT)prevP=prevT;
+  g('prevTotal').value=prevT;g('prevPresent').value=prevP;
+  let cPresent=0,cWorking=0;
+  for(let i=0;i<TOTAL;i++){if(dayStates[i]===1){cPresent++;cWorking++;}else if(dayStates[i]===2)cWorking++;}
+  const calTotal=cWorking*cpd,calPresent=cPresent*cpd;
+  g('calTotal').value=calTotal;g('calPresent').value=calPresent;
+  const total=prevT+calTotal,present=prevP+calPresent;
+  const totalD=Math.floor(total/cpd),presentD=Math.floor(present/cpd);
+  g('combinedTotal').textContent=total;
+  g('totalDaysSpan').textContent=totalD+' '+(totalD===1?'day':'days');
+  g('combinedPresent').textContent=present;
+  g('presentDaysSpan').textContent=presentD+' '+(presentD===1?'day':'days');
+  const pct=total>0?(present/total*100):0;
+  g('combinedPercent').textContent=pct.toFixed(1);
+  g('cpdBadge').textContent=cpd+'/day';
+  updateBanner(total,present,pct);
+  renderCalendar();
+  save();
+}
+
+function updateBanner(total,present,pct){
+  const banner=g('statusBanner'),stxt=g('statusText'),schip=g('statusChip');
+  banner.className='status';
+  if(total<=0){stxt.textContent='No classes recorded yet.';schip.textContent='–';banner.classList.add('safe');return;}
+  const pStr=pct.toFixed(1);
+  if(pct>=75){
+    const spare=Math.max(0,Math.floor((4*present-3*total)/3));
+    banner.classList.add('safe');
+    if(spare===0){stxt.textContent='At '+pStr+'% — right at 75% limit.';schip.textContent='0 to spare';}
+    else{stxt.textContent='At '+pStr+'% — you can safely bunk:';schip.textContent=fmtClasses(spare);}
+  }else{
+    const need=Math.max(0,Math.ceil(3*total-4*present));
+    banner.classList.add(pct>=70?'edge':'warn');
+    stxt.textContent='At '+pStr+'% — need to reach 75%:';
+    schip.textContent=fmtClasses(need);
+  }
+}
+
+function goMonth(dir){const next=curMI+dir;if(next<0||next>=MONTHS.length)return;slideDir=dir>0?'slide-left':'slide-right';curMI=next;refresh();}
+function goYear(dir){const targetY=MONTHS[curMI].year+dir;if(targetY<Y0||targetY>Y1)return;const ni=MONTHS.findIndex(m=>m.year===targetY&&m.month===0);if(ni<0)return;slideDir=dir>0?'slide-left':'slide-right';curMI=ni;refresh();}
+
+g('prevMonthBtn').addEventListener('click',()=>goMonth(-1));
+g('nextMonthBtn').addEventListener('click',()=>goMonth(1));
+g('prevYearBtn').addEventListener('click',()=>goYear(-1));
+g('nextYearBtn').addEventListener('click',()=>goYear(1));
+
+let swX=null,swY=null;
+const calCard=g('calCard');
+calCard.addEventListener('touchstart',e=>{swX=e.touches[0].clientX;swY=e.touches[0].clientY;},{passive:true});
+calCard.addEventListener('touchend',e=>{
+  if(swX===null)return;
+  const dx=e.changedTouches[0].clientX-swX,dy=e.changedTouches[0].clientY-swY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40)goMonth(dx<0?1:-1);
+  swX=swY=null;
+},{passive:true});
+
+function applyPreset(state){const mo=MONTHS[curMI];for(let d=1;d<=mo.days;d++){const idx=mo.startOffset+d-1;const dow=new Date(mo.year,mo.month,d).getDay();if(dow!==0)dayStates[idx]=state;}refresh();}
+g('clearCalendarBtn').addEventListener('click',()=>{const m=MONTHS[curMI];for(let i=m.startOffset;i<m.startOffset+m.days;i++)dayStates[i]=0;refresh();});
+g('presetPresent').addEventListener('click',()=>applyPreset(1));
+g('presetAbsent').addEventListener('click',()=>applyPreset(2));
+
+g('syncCalendarBtn').addEventListener('click',()=>{
+  let tot=parseInt(g('calTotal').value)||0,pres=parseInt(g('calPresent').value)||0;
+  if(tot<0)tot=0;if(pres<0)pres=0;
+  const wd=Math.min(TOTAL,Math.floor(tot/cpd));
+  const pd=Math.min(wd,Math.floor(pres/cpd));
+  dayStates.fill(0);
+  for(let i=0;i<wd;i++)dayStates[i]=i<pd?1:2;
+  refresh();
+});
+
+g('resetAllBtn').addEventListener('click',()=>{
+  dayStates.fill(0);
+  g('prevTotal').value=0;g('prevPresent').value=0;
+  cpd=7;cpdTmp=7;g('cpdDisplay').textContent=7;
+  refresh();
+});
+
+g('prevTotal').addEventListener('input',refresh);
+g('prevPresent').addEventListener('input',refresh);
+
+g('darkModeBtn').addEventListener('click',()=>{
+  document.body.classList.toggle('dark');
+  g('darkModeBtn').textContent=document.body.classList.contains('dark')?'☀️':'🌙';
+  save();
+});
+
+g('cpdBadge').addEventListener('click',()=>{cpdTmp=cpd;g('cpdDisplay').textContent=cpdTmp;g('cpdOverlay').className='overlay open';});
+g('cpdOverlay').addEventListener('click',e=>{if(e.target===g('cpdOverlay'))g('cpdOverlay').className='overlay';});
+g('cpdMinus').addEventListener('click',()=>{if(cpdTmp>1){cpdTmp--;g('cpdDisplay').textContent=cpdTmp;}});
+g('cpdPlus').addEventListener('click',()=>{if(cpdTmp<20){cpdTmp++;g('cpdDisplay').textContent=cpdTmp;}});
+g('cpdConfirm').addEventListener('click',()=>{cpd=cpdTmp;g('cpdOverlay').className='overlay';refresh();});
+
+load();
+refresh();
+
+/* ═══════════════ GUIDE LOGIC ═══════════════ */
+const GSTEPS=6;
+const gExpanded=new Array(GSTEPS).fill(false);
+const gDone=new Array(GSTEPS).fill(false);
+
+window.gtoggle=function(i){
+  gExpanded[i]=!gExpanded[i];
+  if(gExpanded[i])gDone[i]=true;
+  gRender();
+};
+
+function gRender(){
+  const openCount=gDone.filter(Boolean).length;
+  g('gProgFill').style.width=(openCount/GSTEPS*100)+'%';
+  g('gProgLbl').textContent=openCount+' / '+GSTEPS+' read';
+  for(let i=0;i<GSTEPS;i++){
+    const card=g('gs-'+i);
+    card.classList.toggle('expanded',gExpanded[i]);
+    card.classList.toggle('done',gDone[i]&&!gExpanded[i]);
+    const num=card.querySelector('.g-num');
+    num.textContent=(gDone[i]&&!gExpanded[i])?'✓':(i+1);
+  }
+}
+
+g('helpFab').addEventListener('click',()=>{
+  g('guidePanel').classList.add('open');
+});
+g('guideClose').addEventListener('click',()=>{
+  g('guidePanel').classList.remove('open');
+});
+
+// Guide CPD demo
+let gCpdV=7;
+window.gChangeCPD=function(d){
+  gCpdV=Math.max(1,Math.min(20,gCpdV+d));
+  g('gCpdVal').textContent=gCpdV;
+  g('gCpdBadge').textContent=gCpdV+'/day';
+};
+
+gRender();
+})();
+</script>
+</body>
+</html>
